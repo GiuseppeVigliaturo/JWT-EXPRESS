@@ -6,6 +6,8 @@ const {verifyToken,signToken,deleteToken} = require('./middleware/user-auth')
 require('dotenv').config();
 
 const app = express();
+app.set('view engine','ejs');
+app.use(express.static('public'));
 app.use(cookieParser());
 
 
@@ -18,7 +20,9 @@ app.get('/login',signToken,(req,res)=>{
 //se dopo aver fatto richiesta alla rotta login vado in questa rotta troverò il token
 // il client cioè ci sta inviando il token 
 app.get('/user/profile',verifyToken,(req,res)=>{
-   res.send('sei autenticato!');
+    console.log(req.user.tema);
+    const tema = req.user.tema;
+   res.render('profile', {tema});
 })
 
 app.get('/user/message',verifyToken,(req,res)=>{

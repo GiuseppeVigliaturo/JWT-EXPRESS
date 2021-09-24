@@ -12,7 +12,9 @@ function verifyToken (req,res,next) {
     //Dato che stiamo lavorando con codice sincrono possiamo usare il blocco try catch
     try {
         const pub_key= fs.readFileSync('rsa.public');
-        const payload = jwt.verify(token, pub_key,options);
+        //const payload = jwt.verify(token, pub_key,options);
+        //rendo il payload disponibile alle middleware successive
+        req.user = jwt.verify(token, pub_key,options);
         next();   
     } catch (error) {
         return res.status(401).send('il token non è valido oppure è scaduto')
@@ -32,8 +34,8 @@ function deleteToken(req,res,next) {
 }
 
 function signToken (req,res,next){
-const payload = { id: 1, isLogged: true}
-
+const payload = { id: 1, tipoUtente: 'premium', tema: 'dark'};
+const options = {expiresIn: '100s', algorithm: 'RS256'};
 const cookieSetting = {
     expires : new Date(Date.now() +100000),
     httpOnly: true,
